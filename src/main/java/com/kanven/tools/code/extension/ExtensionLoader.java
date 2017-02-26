@@ -96,7 +96,7 @@ public class ExtensionLoader<T> {
 	}
 
 	private void loadFiles(Map<String, Class<?>> clazzs, String dir) {
-		String path = dir + type.getSimpleName();
+		String path = dir + type.getName();
 		Enumeration<URL> urls = null;
 		ClassLoader loader = findClassLoader();
 		try {
@@ -145,7 +145,7 @@ public class ExtensionLoader<T> {
 				}
 				clazzs.putIfAbsent(name, clazz);
 			} catch (ClassNotFoundException e) {
-				throw new IllegalStateException("【" + className + "】类加载失败！");
+				throw new IllegalStateException("【" + className + "】类加载失败！",e);
 			}
 		}
 	}

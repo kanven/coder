@@ -24,8 +24,13 @@ public class Invoker {
 		String[] params = cmd.split(" ");
 		String name = params[0];
 		Command command = loader.getEntity(name);
+		if (command == null) {
+			throw new IllegalStateException("【" + cmd + "】命令对应实体不存在！");
+		}
 		command.setWriter(print);
-		command.execute(Arrays.copyOfRange(params, 1, params.length - 1));
+		if (params.length > 1) {
+			command.execute(Arrays.copyOfRange(params, 1, params.length - 1));
+		}
 	}
 
 	public void setPrint(PrintWriter print) {
