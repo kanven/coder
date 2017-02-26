@@ -5,6 +5,10 @@ import com.mysql.jdbc.Driver;
 
 public class MysqlTableHandler extends TableHandler {
 
+	public MysqlTableHandler() {
+
+	}
+
 	public MysqlTableHandler(String url, String user, String password) throws ClassNotFoundException {
 		super(url, user, password);
 	}

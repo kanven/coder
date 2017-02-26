@@ -22,7 +22,7 @@ import com.kanven.tools.code.TypeConvert;
  * @author kanven
  *
  */
-public abstract class TableHandler {
+public abstract class TableHandler implements Handler {
 
 	private static final Logger log = LoggerFactory.getLogger(TableHandler.class);
 
@@ -33,6 +33,10 @@ public abstract class TableHandler {
 	private String url;
 
 	protected abstract void loadDriver() throws ClassNotFoundException;
+
+	public TableHandler() {
+
+	}
 
 	public TableHandler(String url, String user, String password) throws ClassNotFoundException {
 		this.url = url;
@@ -179,6 +183,30 @@ public abstract class TableHandler {
 			sb.append(firstCharUpper(item));
 		}
 		return sb.toString();
+	}
+
+	public String getUser() {
+		return user;
+	}
+
+	public void setUser(String user) {
+		this.user = user;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public String getUrl() {
+		return url;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
 	}
 
 }
