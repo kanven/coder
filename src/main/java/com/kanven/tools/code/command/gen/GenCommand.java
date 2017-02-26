@@ -96,4 +96,15 @@ public class GenCommand extends AbstractCommand {
 		Command command = loader.getEntity(argument.getDbKind());
 	}
 
+	@Override
+	public void help() {
+		HelpFormatter formatter = new HelpFormatter();
+		formatter.printHelp("gen", options);
+	}
+
+	@Override
+	public boolean hasOptions() {
+		return true;
+	}
+
 }

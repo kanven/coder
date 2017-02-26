@@ -6,6 +6,12 @@ import java.util.Arrays;
 import com.kanven.tools.code.command.Command;
 import com.kanven.tools.code.extension.ExtensionLoader;
 
+/**
+ * 命令调用者
+ * 
+ * @author kanven
+ *
+ */
 public class Invoker {
 
 	private ExtensionLoader<Command> loader = ExtensionLoader.getExtensionLoader(Command.class);
@@ -30,6 +36,12 @@ public class Invoker {
 		command.setWriter(print);
 		if (params.length > 1) {
 			command.execute(Arrays.copyOfRange(params, 1, params.length - 1));
+		} else {
+			if (command.hasOptions()) {
+				command.help();
+			} else {
+				command.execute(null);
+			}
 		}
 	}
 

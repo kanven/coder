@@ -20,4 +20,14 @@ public class QuitCommand implements Command {
 
 	}
 
+	@Override
+	public void help() {
+
+	}
+
+	@Override
+	public boolean hasOptions() {
+		return false;
+	}
+
 }
