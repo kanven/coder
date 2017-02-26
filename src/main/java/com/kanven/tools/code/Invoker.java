@@ -35,7 +35,7 @@ public class Invoker {
 		}
 		command.setWriter(print);
 		if (params.length > 1) {
-			command.execute(Arrays.copyOfRange(params, 1, params.length - 1));
+			command.execute(Arrays.copyOfRange(params, 1, params.length));
 		} else {
 			if (command.hasOptions()) {
 				command.help();

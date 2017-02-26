@@ -16,7 +16,11 @@ public class Argument {
 
 	private String dbKind;
 
+	private String user;
+
 	private String password;
+
+	private String table;
 
 	private String pkg;
 
@@ -35,6 +39,9 @@ public class Argument {
 			if (index > -1) {
 				int start = index + 1;
 				int end = url.indexOf(":", start);
+				if (end == -1) {
+					end = url.length();
+				}
 				this.dbKind = url.substring(start, end);
 			}
 		}
@@ -44,12 +51,28 @@ public class Argument {
 		return dbKind;
 	}
 
+	public String getUser() {
+		return user;
+	}
+
+	public void setUser(String user) {
+		this.user = user;
+	}
+
 	public String getPassword() {
 		return password;
 	}
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public String getTable() {
+		return table;
+	}
+
+	public void setTable(String table) {
+		this.table = table;
 	}
 
 	public String getPkg() {

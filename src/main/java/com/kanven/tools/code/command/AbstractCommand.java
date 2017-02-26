@@ -34,7 +34,7 @@ public abstract class AbstractCommand implements Command {
 			CommandLine cmd = parser.parse(options, args);
 			doParse(cmd);
 		} catch (ParseException e) {
-
+			throw new IllegalStateException("命令解析出现异常！", e);
 		}
 	}
 
