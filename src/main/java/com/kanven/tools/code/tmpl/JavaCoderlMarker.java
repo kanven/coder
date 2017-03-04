@@ -7,20 +7,10 @@ import java.io.IOException;
 import java.io.Writer;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.lang3.StringUtils;
 
 import com.kanven.tools.code.EntityMeta;
-
-import freemarker.core.ParseException;
-import freemarker.template.Configuration;
-import freemarker.template.MalformedTemplateNameException;
-import freemarker.template.Template;
-import freemarker.template.TemplateException;
-import freemarker.template.TemplateExceptionHandler;
-import freemarker.template.TemplateNotFoundException;
 
 /**
  * 模版处理类
@@ -28,83 +18,51 @@ import freemarker.template.TemplateNotFoundException;
  * @author kanven
  *
  */
-public class TmplMarker {
-
-	private static final String DEFAULT_ENCODE = "UTF-8";
-
-	private static final String DEFAULT_BASE_PACKAGE_PATH = "tmpl";
-
-	private static final String DEFAULT_BASE_OUTPUT_PATH = "output";
+public class JavaCoderlMarker extends AbstractTemplate<EntityMeta> {
 
 	private static final String DEFAULT_JAVA_OUTPUT_PATH = DEFAULT_BASE_OUTPUT_PATH + File.separator + "java";
 
 	private static final String DEFAULT_BATIES_OUTPUT_PATH = DEFAULT_BASE_OUTPUT_PATH + File.separator + "baties";
 
-	private String encode = DEFAULT_ENCODE;
-
-	private String tmplPath = DEFAULT_BASE_PACKAGE_PATH;
-
 	private String javaPath;
 
 	private String batiesPath;
 
-	private Configuration cfg;
-
-	private boolean inited = false;
-
-	private Lock lock = new ReentrantLock();
-
-	public TmplMarker() {
+	public JavaCoderlMarker() {
 
 	}
 
-	public TmplMarker(String javaPath, String batiesPath) {
+	public JavaCoderlMarker(String javaPath, String batiesPath) {
 		this.javaPath = javaPath;
 		this.batiesPath = batiesPath;
 	}
 
-	public TmplMarker(String tmplPath, String javaPath, String batiesPath) {
-		this.tmplPath = tmplPath;
+	public JavaCoderlMarker(String tmplPath, String javaPath, String batiesPath) {
+		super(DEFAULT_ENCODE, tmplPath);
 		this.javaPath = javaPath;
 		this.batiesPath = batiesPath;
 	}
 
-	public TmplMarker(String encode, String tmplPath, String javaPath, String batiesPath) {
-		this.encode = encode;
-		this.tmplPath = tmplPath;
+	public JavaCoderlMarker(String encode, String tmplPath, String javaPath, String batiesPath) {
+		super(encode, tmplPath);
 		this.javaPath = javaPath;
 		this.batiesPath = batiesPath;
 	}
 
-	public void process(EntityMeta meta) throws TemplateNotFoundException, MalformedTemplateNameException,
-			ParseException, IOException, TemplateException, URISyntaxException {
-		init();
-		URL context = ClassLoader.getSystemResource("");
-		URL tpls = ClassLoader.getSystemResource(tmplPath);
-		File tmplDir = new File(tpls.toURI());
-		if (tmplDir.exists() && tmplDir.isDirectory()) {
-			File[] fiels = tmplDir.listFiles();
-			if (fiels != null && fiels.length > 0) {
-				for (File file : fiels) {
-					String name = file.getName();
-					Template template = cfg.getTemplate(name);
-					Writer writer = null;
-					if ("entity.ftlh".equals(name)) {
-						writer = writeJavaFile(context, meta);
-					} else if ("mybatis.ftlh".equals(name)) {
-						writer = writerBatiesFile(context, meta);
-					}
-					if (writer != null) {
-						try {
-							template.process(meta, writer);
-						} finally {
-							writer.close();
-						}
-					}
-
-				}
+	@Override
+	public Writer createWriter(URL context, File file, EntityMeta meta) {
+		String name = file.getName();
+		Writer writer = null;
+		try {
+			if ("entity.ftlh".equals(file.getName())) {
+				writer = writeJavaFile(context, meta);
+			} else if ("mybatis.ftlh".equals(name)) {
+				writer = writerBatiesFile(context, meta);
 			}
+		} catch (URISyntaxException | IOException e) {
+			throw new IllegalStateException("【" + name + "】文件生成失败！", e);
 		}
+		return writer;
 	}
 
 	private Writer writeJavaFile(URL context, EntityMeta meta) throws URISyntaxException, IOException {
@@ -167,39 +125,6 @@ public class TmplMarker {
 		}
 		xf.createNewFile();
 		return new BufferedWriter(new FileWriter(xf));
-	}
-
-	private void init() {
-		if (inited) {
-			return;
-		}
-		lock.lock();
-		try {
-			if (!inited) {
-				cfg = new Configuration(Configuration.VERSION_2_3_25);
-				cfg.setDefaultEncoding(encode);
-				cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
-				cfg.setClassLoaderForTemplateLoading(ClassLoader.getSystemClassLoader(), tmplPath);
-			}
-		} finally {
-			lock.unlock();
-		}
-	}
-
-	public String getEncode() {
-		return encode;
-	}
-
-	public void setEncode(String encode) {
-		this.encode = encode;
-	}
-
-	public String getTmplPath() {
-		return tmplPath;
-	}
-
-	public void setTmplPath(String tmplPath) {
-		this.tmplPath = tmplPath;
 	}
 
 	public String getJavaPath() {

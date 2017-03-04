@@ -2,7 +2,6 @@ package com.kanven.tools.code.command.gen;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.URISyntaxException;
 import java.util.Iterator;
 import java.util.List;
 
@@ -15,7 +14,7 @@ import com.kanven.tools.code.EntityMeta;
 import com.kanven.tools.code.command.AbstractCommand;
 import com.kanven.tools.code.db.Handler;
 import com.kanven.tools.code.extension.ExtensionLoader;
-import com.kanven.tools.code.tmpl.TmplMarker;
+import com.kanven.tools.code.tmpl.JavaCoderlMarker;
 
 import freemarker.template.TemplateException;
 
@@ -142,7 +141,7 @@ public class GenCommand extends AbstractCommand {
 		handler.setUrl(argument.getUrl());
 		handler.setPassword(argument.getPassword());
 		handler.setUser(argument.getUser());
-		TmplMarker marker = new TmplMarker();
+		JavaCoderlMarker marker = new JavaCoderlMarker();
 		if (StringUtils.isBlank(argument.getTable())) {
 			List<EntityMeta> metas = handler.buildEntities(argument.getPkg());
 			if (metas == null || metas.size() <= 0) {
@@ -151,7 +150,7 @@ public class GenCommand extends AbstractCommand {
 			for (EntityMeta meta : metas) {
 				try {
 					marker.process(meta);
-				} catch (IOException | TemplateException | URISyntaxException e) {
+				} catch (IOException | TemplateException  e) {
 					throw new IllegalStateException("生成文件出现异常！", e);
 				}
 			}
@@ -159,7 +158,7 @@ public class GenCommand extends AbstractCommand {
 			EntityMeta meta = handler.buildEntity(argument.getTable(), argument.getPkg());
 			try {
 				marker.process(meta);
-			} catch (IOException | TemplateException | URISyntaxException e) {
+			} catch (IOException | TemplateException e) {
 				throw new IllegalStateException("生成文件出现异常！", e);
 			}
 		}
