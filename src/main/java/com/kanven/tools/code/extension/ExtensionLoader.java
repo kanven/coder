@@ -15,7 +15,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.kanven.tools.code.Constant;
+import com.kanven.tools.code.Constants;
 
 /**
  * 拓展加载器
@@ -26,9 +26,7 @@ import com.kanven.tools.code.Constant;
  */
 public class ExtensionLoader<T> {
 
-	private static final String CODER_DIRECTORY = "META-INF/coder/";
-
-	private static final String CODER_INTERNAL_DIRECTORY = CODER_DIRECTORY + "internal/";
+	private static final String CODER_INTERNAL_DIRECTORY = Constants.CODER_DIRECTORY + "internal/";
 
 	private static final Map<Class<?>, ExtensionLoader<?>> EXTENSION_LOADERS = new ConcurrentHashMap<Class<?>, ExtensionLoader<?>>();
 
@@ -45,10 +43,10 @@ public class ExtensionLoader<T> {
 	@SuppressWarnings("unchecked")
 	public static <T> ExtensionLoader<T> getExtensionLoader(Class<T> clazz) {
 		if (clazz == null) {
-			throw new IllegalArgumentException("拓展接口不能为空！");
+			throw new NullPointerException("拓展接口不能为空！");
 		}
 		if (!clazz.isInterface()) {
-			throw new IllegalArgumentException("拓展类型不时接口类型！");
+			throw new IllegalArgumentException("拓展类型不是接口类型！");
 		}
 		ExtensionLoader<T> loader = (ExtensionLoader<T>) EXTENSION_LOADERS.get(clazz);
 		if (loader == null) {
@@ -117,7 +115,7 @@ public class ExtensionLoader<T> {
 	}
 
 	private void loadFile(Map<String, Class<?>> clazzs, InputStream input, ClassLoader loader) throws IOException {
-		BufferedReader reader = new BufferedReader(new InputStreamReader(input, Constant.DEFAULT_CHARSET));
+		BufferedReader reader = new BufferedReader(new InputStreamReader(input, Constants.DEFAULT_CHARSET));
 		String line = null;
 		while ((line = reader.readLine()) != null) {
 			if (StringUtils.isBlank(line)) {

@@ -8,6 +8,11 @@ import java.net.URL;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
+
+import com.kanven.tools.code.Constants;
+
 import freemarker.core.ParseException;
 import freemarker.template.Configuration;
 import freemarker.template.MalformedTemplateNameException;
@@ -15,17 +20,14 @@ import freemarker.template.TemplateException;
 import freemarker.template.TemplateExceptionHandler;
 import freemarker.template.TemplateNotFoundException;
 
-public abstract class AbstractTemplate<T> implements Template<T> {
+public abstract class AbstractTemplate implements Template {
 
-	static final String DEFAULT_ENCODE = "UTF-8";
+	protected String encode = Constants.DEFAULT_CHARSET;
 
-	static final String DEFAULT_BASE_PACKAGE_PATH = "tmpl";
-
-	static final String DEFAULT_BASE_OUTPUT_PATH = "output";
-
-	protected String encode = DEFAULT_ENCODE;
-
-	protected String tmplPath = DEFAULT_BASE_PACKAGE_PATH;
+	/**
+	 * 模版存放路径
+	 */
+	protected String tmplPath = Constants.DEFAULT_TEMPLATE_PATH;
 
 	protected Configuration cfg;
 
@@ -37,13 +39,21 @@ public abstract class AbstractTemplate<T> implements Template<T> {
 
 	}
 
+	public AbstractTemplate(String tmplPath) {
+		this.tmplPath = tmplPath;
+	}
+
 	public AbstractTemplate(String encode, String tmplPath) {
 		this.encode = encode;
 		this.tmplPath = tmplPath;
 	}
 
-	public void process(T meta)
+	@Override
+	public void process(Object meta)
 			throws TemplateNotFoundException, MalformedTemplateNameException, ParseException, TemplateException {
+		if (meta == null) {
+			throw new IllegalStateException("没有模版元数据！");
+		}
 		init();
 		URL context = ClassLoader.getSystemResource("");
 		URL tpls = ClassLoader.getSystemResource(tmplPath);
@@ -51,35 +61,41 @@ public abstract class AbstractTemplate<T> implements Template<T> {
 		try {
 			tmplDir = new File(tpls.toURI());
 		} catch (URISyntaxException e) {
-			throw new IllegalStateException("【" + tmplPath + "】模版文件不存在！", e);
+			throw new IllegalStateException("【" + tmplPath + "】模版文件夹不存在！", e);
 		}
 		if (tmplDir.exists() && tmplDir.isDirectory()) {
-			File[] fiels = tmplDir.listFiles();
-			if (fiels != null && fiels.length > 0) {
-				for (File file : fiels) {
-					String name = file.getName();
-					freemarker.template.Template tmpl;
-					try {
-						tmpl = cfg.getTemplate(name);
-						Writer writer = createWriter(context, file, meta);
-						if (writer != null) {
-							try {
-								tmpl.process(meta, writer);
-							} finally {
-								writer.close();
-							}
-							continue;
-						}
-						throw new IllegalStateException("【" + name + "】文件生成失败！");
-					} catch (IOException e) {
-						throw new IllegalStateException("【" + name + "】文件生成失败！", e);
-					}
+			String fp = getTmpl();
+			if (StringUtils.isBlank(fp)) {
+				throw new IllegalStateException("没有制定模版文件！");
+			}
+			String path = tmplPath + fp;
+			URL url = ClassLoader.getSystemResource(path);
+			File file = null;
+			try {
+				file = new File(url.toURI());
+			} catch (URISyntaxException e) {
+				throw new IllegalStateException("模版文件获取失败！", e);
+			}
+			String name = file.getName();
+			Writer writer = null;
+			try {
+				writer = createWriter(context, meta);
+				if (writer != null) {
+					freemarker.template.Template tmpl = cfg.getTemplate(name);
+					tmpl.process(meta, writer);
 				}
+			} catch (IOException e) {
+				throw new IllegalStateException("【" + name + "】文件生成失败！", e);
+			} finally {
+				IOUtils.closeQuietly(writer);
 			}
 		}
+		throw new IllegalStateException(tmplPath + "路径不存在或不是文件夹！");
 	}
 
-	public abstract Writer createWriter(URL context, File fiel, T meta);
+	public abstract String getTmpl();
+
+	public abstract Writer createWriter(URL context, Object meta) throws IOException;
 
 	protected void init() {
 		if (inited) {

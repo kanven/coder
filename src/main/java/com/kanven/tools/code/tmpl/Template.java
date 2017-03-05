@@ -13,9 +13,9 @@ import freemarker.template.TemplateNotFoundException;
  * 
  * @author kanven
  *
- * @param <T>
+ * @param
  */
-public interface Template<T> {
+public interface Template {
 
 	/**
 	 * 模版处理方法
@@ -27,7 +27,7 @@ public interface Template<T> {
 	 * @throws IOException
 	 * @throws TemplateException
 	 */
-	public void process(T meta) throws TemplateNotFoundException, MalformedTemplateNameException, ParseException,
-			TemplateException;
+	public void process(Object meta)
+			throws TemplateNotFoundException, MalformedTemplateNameException, ParseException, TemplateException;
 
 }

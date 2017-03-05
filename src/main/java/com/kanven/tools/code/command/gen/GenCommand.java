@@ -14,7 +14,8 @@ import com.kanven.tools.code.EntityMeta;
 import com.kanven.tools.code.command.AbstractCommand;
 import com.kanven.tools.code.db.Handler;
 import com.kanven.tools.code.extension.ExtensionLoader;
-import com.kanven.tools.code.tmpl.JavaCoderlMarker;
+import com.kanven.tools.code.tmpl.Template;
+import com.kanven.tools.code.tmpl.impl.JavaCoderMarker;
 
 import freemarker.template.TemplateException;
 
@@ -141,7 +142,10 @@ public class GenCommand extends AbstractCommand {
 		handler.setUrl(argument.getUrl());
 		handler.setPassword(argument.getPassword());
 		handler.setUser(argument.getUser());
-		JavaCoderlMarker marker = new JavaCoderlMarker();
+		if (StringUtils.isNotBlank(argument.getType())) {
+			ExtensionLoader<Template> tmplLoader = ExtensionLoader.getExtensionLoader(Template.class);
+		}
+		JavaCoderMarker marker = new JavaCoderMarker();
 		if (StringUtils.isBlank(argument.getTable())) {
 			List<EntityMeta> metas = handler.buildEntities(argument.getPkg());
 			if (metas == null || metas.size() <= 0) {
@@ -150,7 +154,7 @@ public class GenCommand extends AbstractCommand {
 			for (EntityMeta meta : metas) {
 				try {
 					marker.process(meta);
-				} catch (IOException | TemplateException  e) {
+				} catch (IOException | TemplateException e) {
 					throw new IllegalStateException("生成文件出现异常！", e);
 				}
 			}
