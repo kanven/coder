@@ -2,16 +2,17 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.kanven</groupId>
-	<artifactId>coderTool</artifactId>
+	<artifactId>coder</artifactId>
 	<packaging>jar</packaging>
 	<version>1.0.0-SNAPSHOT</version>
-	<name>coderTool</name>
+	<name>coder</name>
 	<url>http://maven.apache.org</url>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<mysql.version>5.1.5</mysql.version>
 		<oracle.version>10.2.0.4</oracle.version>
+		<deploy.dir>${project.build.directory}/dest</deploy.dir>
 	</properties>
 
 	<dependencies>
@@ -149,7 +150,7 @@
 				<version>2.5</version>
 				<executions>
 					<execution>
-						<id>copy-resources</id>
+						<id>conf-resources</id>
 						<phase>package</phase>
 						<goals>
 							<goal>copy-resources</goal>
@@ -161,7 +162,7 @@
 							<resources>
 								<resource>
 									<!-- 待拷贝的资源文件源地址 -->
-									<directory>src/main/resources/</directory>
+									<directory>src/main/resources/conf/</directory>
 									<!-- 可以设定拷贝规则,哪些需要操作，哪些不操作 -->
 									<includes>
 										<include>*.properties</include>
@@ -172,17 +173,42 @@
 						</configuration>
 					</execution>
 					<execution>
+						<id>tmpl-resources</id>
 						<phase>package</phase>
 						<goals>
 							<goal>copy-resources</goal>
 						</goals>
 						<configuration>
 							<encoding>UTF-8</encoding>
+							<!-- 这是目标地址目录, 将编译完后的资源文件拷贝到该 目录 下 -->
+							<outputDirectory>${deploy.dir}/tmpl</outputDirectory>
+							<resources>
+								<resource>
+									<!-- 待拷贝的资源文件源地址 -->
+									<directory>src/main/resources/tmpl/</directory>
+									<!-- 可以设定拷贝规则,哪些需要操作，哪些不操作 -->
+									<includes>
+										<include>*.ftlh</include>
+									</includes>
+									<filtering>true</filtering>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+					<execution>
+						<id>bin-resources</id>
+						<phase>package</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<encoding>UTF-8</encoding>
+							<!-- 这是目标地址目录, 将编译完后的资源文件拷贝到该 目录 下 -->
 							<outputDirectory>${deploy.dir}/bin</outputDirectory>
 							<resources>
 								<resource>
 									<!-- 待拷贝的资源文件源地址 -->
-									<directory>bin/</directory>
+									<directory>src/main/resources/bin/</directory>
 									<!-- 可以设定拷贝规则,哪些需要操作，哪些不操作 -->
 									<includes>
 										<include>*.sh</include>

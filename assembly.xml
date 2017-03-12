@@ -12,17 +12,22 @@
     <fileSets>
         <fileSet>
             <directory>target/dest/conf/</directory>
-            <outputDirectory>task_exactor/conf</outputDirectory>
+            <outputDirectory>coder/conf</outputDirectory>
             <fileMode>0644</fileMode>
         </fileSet>
         <fileSet>
             <directory>target/dest/bin/</directory>
-            <outputDirectory>task_exactor/bin</outputDirectory>
+            <outputDirectory>coder/bin</outputDirectory>
             <fileMode>0755</fileMode>
         </fileSet>
         <fileSet>
             <directory>target/dest/lib/</directory>
-            <outputDirectory>task_exactor/lib</outputDirectory>
+            <outputDirectory>coder/lib</outputDirectory>
+            <fileMode>0644</fileMode>
+        </fileSet>
+        <fileSet>
+            <directory>target/dest/tmpl/</directory>
+            <outputDirectory>coder/tmpl</outputDirectory>
             <fileMode>0644</fileMode>
         </fileSet>
     </fileSets>
