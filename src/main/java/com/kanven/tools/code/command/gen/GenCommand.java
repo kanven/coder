@@ -15,7 +15,6 @@ import com.kanven.tools.code.command.AbstractCommand;
 import com.kanven.tools.code.db.Handler;
 import com.kanven.tools.code.extension.ExtensionLoader;
 import com.kanven.tools.code.tmpl.Template;
-import com.kanven.tools.code.tmpl.impl.JavaCoderMarker;
 
 import freemarker.template.TemplateException;
 
@@ -142,30 +141,23 @@ public class GenCommand extends AbstractCommand {
 		handler.setUrl(argument.getUrl());
 		handler.setPassword(argument.getPassword());
 		handler.setUser(argument.getUser());
+		String type = argument.getType();
 		if (StringUtils.isNotBlank(argument.getType())) {
 			ExtensionLoader<Template> tmplLoader = ExtensionLoader.getExtensionLoader(Template.class);
-		}
-		JavaCoderMarker marker = new JavaCoderMarker();
-		if (StringUtils.isBlank(argument.getTable())) {
+			Template template = tmplLoader.getEntity(type);
 			List<EntityMeta> metas = handler.buildEntities(argument.getPkg());
 			if (metas == null || metas.size() <= 0) {
 				return;
 			}
 			for (EntityMeta meta : metas) {
 				try {
-					marker.process(meta);
+					template.process(meta);
 				} catch (IOException | TemplateException e) {
 					throw new IllegalStateException("生成文件出现异常！", e);
 				}
 			}
-		} else {
-			EntityMeta meta = handler.buildEntity(argument.getTable(), argument.getPkg());
-			try {
-				marker.process(meta);
-			} catch (IOException | TemplateException e) {
-				throw new IllegalStateException("生成文件出现异常！", e);
-			}
 		}
+		throw new IllegalStateException("没有指定模版处理类型！");
 	}
 
 	@Override

@@ -13,13 +13,14 @@ import org.apache.commons.lang3.StringUtils;
 import com.kanven.tools.code.Constants;
 import com.kanven.tools.code.EntityMeta;
 import com.kanven.tools.code.tmpl.AbstractTemplate;
+import com.kanven.tools.code.utils.PropertiesUtils;
 
 public class MybatiesCoderMaker extends AbstractTemplate {
 
 	private static final String DEFAULT_BATIES_OUTPUT_PATH = Constants.DEFAULT_BASE_OUTPUT_PATH + File.separator
 			+ "baties";
 
-	private static final String KIND = "mybatis";
+	private static final String MYBATIES_CONFIG_PATH = "conf/mybaties.properties";
 
 	/**
 	 * mybatis文件输出目录
@@ -60,7 +61,6 @@ public class MybatiesCoderMaker extends AbstractTemplate {
 		} catch (URISyntaxException e) {
 			throw new IllegalStateException("文件处理出现异常！", e);
 		}
-
 	}
 
 	public String getBatiesPath() {
@@ -73,8 +73,11 @@ public class MybatiesCoderMaker extends AbstractTemplate {
 
 	@Override
 	public String getTmpl() {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			return PropertiesUtils.getProperty(MYBATIES_CONFIG_PATH, "tmpl.name");
+		} catch (URISyntaxException | IOException e) {
+			throw new IllegalStateException("获取指定模版文件名称出现！", e);
+		}
 	}
 
 }

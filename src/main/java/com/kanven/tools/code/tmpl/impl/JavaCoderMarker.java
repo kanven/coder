@@ -13,6 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.kanven.tools.code.Constants;
 import com.kanven.tools.code.EntityMeta;
 import com.kanven.tools.code.tmpl.AbstractTemplate;
+import com.kanven.tools.code.utils.PropertiesUtils;
 
 /**
  * 模版处理类
@@ -24,8 +25,8 @@ public class JavaCoderMarker extends AbstractTemplate {
 
 	private static final String DEFAULT_JAVA_OUTPUT_PATH = Constants.DEFAULT_BASE_OUTPUT_PATH + File.separator + "java";
 
-	private static final String KIND = "java";
-	
+	private static final String JAVA_CONFIG_PATH = "conf/java.properties";
+
 	/**
 	 * java文件输出目录
 	 */
@@ -104,8 +105,11 @@ public class JavaCoderMarker extends AbstractTemplate {
 
 	@Override
 	public String getTmpl() {
-		
-		return null;
+		try {
+			return PropertiesUtils.getProperty(JAVA_CONFIG_PATH, "tmpl.name");
+		} catch (URISyntaxException | IOException e) {
+			throw new IllegalStateException("获取指定模版文件名称出现！", e);
+		}
 	}
 
 }
