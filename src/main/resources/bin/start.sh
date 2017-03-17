@@ -8,7 +8,7 @@ CONF_DIR=$HOME_DIR/conf
 TMPL_DIR=$HOME_DIR/tmpl
 LOG_DIR=$HOME_DIR/log
 PID=`ps -f|grep java|grep $CONF_DIR|awk '{print $2}'`
-if [ -n "$PID" ]
+if [ -n "$PID" ];
 then
    echo '服务已经启动！'
    exit 1
@@ -19,7 +19,6 @@ then
 fi
 STD_OUT_FILE=$LOG_DIR/stdout.log
 LIB_JARS=`ls $LIB_DIR| grep .jar|awk '{print "'$LIB_DIR'/"$0}'|tr "\n" ":"`
-echo $LIB_JARS
 JAVA_MEM_OPTS=""
 BITS=`java -version 2>&1 | grep -i 64-bit`
 if [ -n "$BITS" ]; then
@@ -28,17 +27,10 @@ else
     JAVA_MEM_OPTS=" -server -Xms1g -Xmx1g -XX:PermSize=128m -XX:SurvivorRatio=2 -XX:+UseParallelGC "
 fi
 echo "starting server....."
-nohup java $JAVA_MEM_OPTS -classpath $CONF_DIR:$TMPL_DIR:LOG_DIR:LIB_JARS com.kanven.tools.code.Coder > $STD_OUT_FILE 2>&1 &
-COUNT=0
-while [ $COUNT -lt 1 ]
-do
-   echo -e ".\c"
-   sleep 1
-   COUNT=`ps -e|grep java|grep $CONF_DIR|awk '{print $2}'|wc -l`
-   if [ $COUNT -gt 0 ]
-     then 
-        break
-   fi
-done
-echo "Server started"
-exit 0
+java $JAVA_MEM_OPTS -classpath $CONF_DIR:$TMPL_DIR:$LOG_DIR:$LIB_JARS com.kanven.tools.code.Coder
+if [ $?==0 ];then
+   echo "服务正常退出"
+else
+   echo "服务异常退出"
+fi
+exit $?
