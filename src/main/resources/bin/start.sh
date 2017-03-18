@@ -13,11 +13,12 @@ then
    echo '服务已经启动！'
    exit 1
 fi
-if [ ! -d $LOG_DIR ]
+if [ ! -d $LOG_DIR ];
 then
    mkdir $LOG_DIR
 fi
 STD_OUT_FILE=$LOG_DIR/stdout.log
+JAVA_DATA=" -Dlog.dir=$LOG_DIR"
 LIB_JARS=`ls $LIB_DIR| grep .jar|awk '{print "'$LIB_DIR'/"$0}'|tr "\n" ":"`
 JAVA_MEM_OPTS=""
 BITS=`java -version 2>&1 | grep -i 64-bit`
@@ -27,7 +28,7 @@ else
     JAVA_MEM_OPTS=" -server -Xms1g -Xmx1g -XX:PermSize=128m -XX:SurvivorRatio=2 -XX:+UseParallelGC "
 fi
 echo "starting server....."
-java $JAVA_MEM_OPTS -classpath $CONF_DIR:$TMPL_DIR:$LOG_DIR:$LIB_JARS com.kanven.tools.code.Coder
+exec $JAVA_MEM_OPTS $JAVA_MEM_OPTS -classpath $CONF_DIR:$TMPL_DIR:$LOG_DIR:$LIB_JARS com.kanven.tools.code.Coder
 if [ $?==0 ];then
    echo "服务正常退出"
 else
