@@ -25,7 +25,12 @@ public class Coder {
 					out.println("请输入命令");
 					out.flush();
 				} else {
-					invoker.invoke(cmd);
+					try {
+						invoker.invoke(cmd);
+					} catch (Exception e) {
+						e.printStackTrace();
+						log.error("执行命令出现异常，命令为：" + cmd, e);
+					}
 				}
 			}
 		} catch (IOException e) {
